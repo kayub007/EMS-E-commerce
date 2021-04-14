@@ -59,7 +59,7 @@ class UI {
     let result = '';
     products.forEach(product => {
       result += `
-      <div class="product-list" >
+      <div class="product-list" data-id=${product.id}>
       <div class="product-detail" >
         <img src=${product.image} alt="" class="product-img" >
         <div class="price-container" >
@@ -98,17 +98,20 @@ class UI {
       //if in cart remove item
       button.addEventListener('click', (event) => {
         if (event.target.innerText == "REMOVE FROM CART") {
-          console.log("in cart");
-          console.log(document.getElementById("cart-item"));
-          // let removeFromCart = event.target;
-          // let removeCartItem = removeFromCart.parentElement.parentElement.parentElement.parentElement.parentElement.children[6].children[0].children[1]
-          
-          // this.removeItem(id);
+          let removeFromCartBtn = event.target;
+          let elements = cartContent.children;
+          for (let i = 0; i < elements.length; i++) {
+            let element = elements[i];
+            if (element.dataset.id === removeFromCartBtn.dataset.id) {
+              element.remove()
+              break;
+            }
+          }
+          this.removeItem(id);
         }else{
           event.target.innerText = "Remove from cart";
           event.target.style.color = "#fff";
           event.target.style.backgroundColor = "#ff9a3d";
-          console.log(event.target.innerText);
   
           // event.target.disabled = true;
   
@@ -148,6 +151,7 @@ class UI {
   addCartItem(item) {
     const div = document.createElement('div');
     div.classList.add('cart-item');
+    div.dataset.id = item.id
     div.innerHTML = `
     <span class="item-number item-detail" >${item.serialNumber}</span>
     <span class="item-name item-detail" >${item.name}</span>
