@@ -1,5 +1,5 @@
-// Variables
 
+// Variables
 const cartBtn = document.querySelector('.cart-info');
 const continueShoppingBtn = document.querySelector('.continueShopping-btn'); 
 const checkOutBtn = document.querySelector(".checkOut-btn");
@@ -11,7 +11,7 @@ const summaryDOM = document.querySelector('.summary-modal');
 const summaryOverlay = document.querySelector('.summary-modal-overlay');
 const summaryOkBtn = document.querySelector('.summary-ok-btn');
 const cartContenSummary = document.querySelector('.summary-content'); 
-const customerName = document.querySelector('.costumer-name');
+const summaryCustomerName = document.querySelector('.costumer-name');
 
 const cartItems = document.querySelector('.cart-number'); 
 const cartTotal = document.querySelector('.total-amount'); 
@@ -21,12 +21,21 @@ const productsDOM = document.querySelector('.product-container');
 
 const cartRow = document.querySelector('.cart-item'); 
 
+const customerName = document.getElementById("name");
+const email = document.getElementById("email");
+const phone = document.getElementById("phone");
+
+const nameError = document.getElementById("name-error");
+const emailError = document.getElementById("email-error");
+const phoneError = document.getElementById("phone-error");
+
+// const thankYouMsg = document.getElementById('thankyou-msg');
+
 
 // const formDiv = document.querySelector('.cart-form');
 
 //  cart
 let cart = [];
-// let updatedCart = [];
 
 //  buttons
 let buttonsDOM = [];
@@ -55,7 +64,6 @@ class Products {
 // display products
 class UI {
   displayProducts(products){
-    // console.log(products);
     let result = '';
     products.forEach(product => {
       result += `
@@ -75,12 +83,10 @@ class UI {
       ` ;
     });
     productsDOM.innerHTML = result;
-    // console.log(result)
   }
 
   //Add to cart btns
   getAddToCartButtons() {
-    
     const buttons = [...document.querySelectorAll('.product-btn')];
     buttonsDOM = buttons;
     buttons.forEach(button => {
@@ -91,8 +97,6 @@ class UI {
         button.innerText = "Remove from cart";
         button.style.color = "#fff";
         button.style.backgroundColor = "#ff9a3d";
-        
-        // button.disabled = true;
       }
 
       //if in cart remove item
@@ -107,14 +111,14 @@ class UI {
               break;
             }
           }
+          Array.from(cartContent.children).forEach((item, index)=>{
+            item.children[0].innerText = index + 1;
+          })
           this.removeItem(id);
         }else{
           event.target.innerText = "Remove from cart";
           event.target.style.color = "#fff";
           event.target.style.backgroundColor = "#ff9a3d";
-  
-          // event.target.disabled = true;
-  
           // get product from product
           let cartItem = {...Storage.getProduct(id), amount: 1, serialNumber: 0};
           // add product to the cart
@@ -125,7 +129,6 @@ class UI {
           this.setCartValues(cart)
           // display cart item 
           this.addCartItem(cartItem);
-
           // show cart 
           // this.showCart();
         }
@@ -142,10 +145,10 @@ class UI {
       finalTotal += item.price; 
       itemsTotal = cart.length;
       item.serialNumber = index + 1;
-      // item.index = cart.indexOf(item) + 1;
     })
     cartTotal.innerText = finalTotal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     cartItems.innerText = itemsTotal;
+    
   }
 
   addCartItem(item) {
@@ -195,7 +198,6 @@ class UI {
     this.setCartValues(cart);
     Storage.saveCart(cart);
     let button = this.getSingleButton(id);
-    button.disabled = false;
     button.innerText = "Add to Cart";
     button.style.color = "#000";
     button.style.backgroundColor = "#ff7a00";
@@ -208,8 +210,6 @@ class UI {
       cartContent.removeChild(cartContent.children[0])
     } 
   }
-
-
 
   poppulateCart(cart) {
     cart.forEach((item) => {
@@ -225,6 +225,15 @@ class UI {
     continueShoppingBtn.addEventListener('click', this.hideCart);
     summaryOkBtn.addEventListener('click', ()=>{
       this.clearCart();
+      customerName.value = "";
+      email.value = "";
+      phone.value = "";
+      customerName.style.borderColor = "initial";
+        email.style.borderColor = "initial";
+        phone.style.borderColor = "initial";
+      while (cartContenSummary.children.length > 0) {
+        cartContenSummary.removeChild(cartContenSummary.children[0])
+      } 
       this.hideCartSummary();
     });
     window.addEventListener('click', (event) => {
@@ -232,6 +241,12 @@ class UI {
         this.hideCart();
       }else if (event.target === summaryOverlay) {
         this.clearCart();
+        document.getElementById("name").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("phone").value = "";
+        while (cartContenSummary.children.length > 0) {
+          cartContenSummary.removeChild(cartContenSummary.children[0])
+        } 
         this.hideCartSummary();
       }
     });
@@ -244,7 +259,10 @@ class UI {
       if (event.target.classList.contains('remove-btn')) {
         let removeBtn = event.target;
         let id = removeBtn.dataset.id;
-        cartContent.removeChild(removeBtn.parentElement);
+        removeBtn.parentNode.remove();
+        Array.from(cartContent.children).forEach((item, index)=>{
+          item.children[0].innerText = index + 1;
+        })
         this.removeItem(id);
       }else if (event.target.classList.contains('plus-btn')){
         let addAmount = event.target;
@@ -257,7 +275,7 @@ class UI {
         Storage.saveCart(cart);
         this.setCartValues(cart);
         addAmount.previousElementSibling.innerText = tempItem.amount;
-        addAmount.parentElement.previousElementSibling.innerText = tempPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        addAmount.parentElement.previousElementSibling.innerText = "\u20A6" + tempPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       }else if (event.target.classList.contains('minus-btn')){
         let minusAmount = event.target;
         let id = minusAmount.dataset.id;
@@ -270,53 +288,36 @@ class UI {
           Storage.saveCart(cart);
           this.setCartValues(cart);
           minusAmount.nextElementSibling.innerText = tempItem.amount;
-          minusAmount.parentElement.previousElementSibling.innerText = tempPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+          minusAmount.parentElement.previousElementSibling.innerText = "\u20A6" +  tempPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }else{
-          // cartContent.removeChild(minusAmount.parentElement.parentElement);
-          // this.removeItem(id);
           alert("You can't have less than 1 quantity of an item, if you wish to remove the item click remove button")
         }
       }
     })
     // form validation
-    const name = document.getElementById("name");
-    const email = document.getElementById("email");
-    const phone = document.getElementById("phone");
-
-    const nameError = document.getElementById("name-error");
-    const emailError = document.getElementById("email-error");
-    const phoneError = document.getElementById("phone-error");
-
-    // const thankYouMsg = document.getElementById('thankyou-msg');
-
-    
-
-
-
-
-    name.addEventListener("focusout", nameValidation);
+    customerName.addEventListener("focusout", nameValidation);
     email.addEventListener("focusout", emailValidation);
     phone.addEventListener("focusout", phoneValidation);
 
     //Check for name input
     function nameValidation() {
-      let nameInput = name.value.trim();
+      let nameInput = customerName.value.trim();
       var numbers = /[0-9]+/;
 
       if (nameInput == "") {
         nameError.innerHTML = "Please input your name";
         nameError.style.display = "block";
-        name.style.borderColor = "red";
+        customerName.style.borderColor = "red";
       } else if (nameInput.match(numbers)) {
         nameError.innerHTML = "Name must be Alphabet";
         nameError.style.display = "block";
-        name.style.borderColor = "red";
+        customerName.style.borderColor = "red";
       } else if (nameInput.length < 3) {
         nameError.innerHTML = "Name cannot be less than three Alphabet";
-        nameError.style.visibility = "visible";
-        name.style.borderColor = "red";
+        nameError.style.display = "block";
+        customerName.style.borderColor = "red";
       } else {
-        name.style.borderColor = "green";
+        customerName.style.borderColor = "green";
         nameError.style.display = "none";
       }
     }
@@ -364,7 +365,7 @@ class UI {
 
     // Checkout Cart
     checkOutBtn.addEventListener("click", (event) => {
-      let nameInput = name.value.trim();
+      let nameInput = customerName.value.trim();
       let emailInput = email.value.trim();
       let phoneNumber = phone.value.trim();
     
@@ -372,28 +373,19 @@ class UI {
       if (cart.length === 0) {
         alert("Please Add Product to Cart");
       }else if (nameInput == "") {
-        nameError.innerHTML = "Please input your phone number";
-        nameError.style.display = "block";
-        name.style.borderColor = "red";
+        nameValidation()
       } else if (emailInput == "") {
-        emailError.innerHTML = "Please input your email ";
-        emailError.style.display = "block";
-        email.style.borderColor = "red";
+        emailValidation()
       } else if (phoneNumber == "") {
-        phoneError.innerHTML =  "Please input your phone number";
-        phoneError.style.display = "block";
-        phone.style.borderColor = "red";
-      } else {
-        name.style.borderColor = "green";
-        email.style.borderColor = "green";
-        phone.style.borderColor = "green";
-
-        this.addCartItemSummary();
-        customerName.innerHTML = nameInput;
-      
+        phoneValidation()
+      }else {
         this.hideCart();
         this.payWithPaystack();
+        // this.showCartSummary();
+        this.addCartItemSummary();
+        summaryCustomerName.innerHTML = nameInput;
       }
+        
       
     });
     
@@ -408,11 +400,11 @@ class UI {
       // label: "Optional string that replaces customer email"
       onClose: function(){
         alert('Window closed.');
+        while (cartContenSummary.children.length > 0) {
+          cartContenSummary.removeChild(cartContenSummary.children[0])
+        } 
       },
       callback: function(response){
-        
-        // this.showCartSummary();
-        // showCart()
         summaryOverlay.classList.add('show-summary');
         summaryDOM.classList.add('show-summary');
       }

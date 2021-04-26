@@ -337,9 +337,9 @@ nav a:hover {
 
 .hero-container {
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  padding: 3rem calc((100vw - 1300px) / 2);
-  height: 87%;
+  grid-template-columns: 1fr 1fr;
+  padding: 2.5rem calc((100vw - 1300px) / 2);
+  height: 90%;
 }
 
 .column-left {
@@ -363,7 +363,7 @@ nav a:hover {
 }
 
 .hero-image {
-  max-width: 100%;
+  max-width: 90%;
 }
 
 .btn {
@@ -554,13 +554,6 @@ footer a:hover {
     width: 40%;
     }
 
-  .column-left {
-    padding-top: 2rem;
-  }
-  .column-right {
-    padding-top: 2rem;
-  }
-
   nav a {
     padding: 0rem .9rem;
   }
@@ -569,12 +562,16 @@ footer a:hover {
     font-size: 3rem;
   }
 
+  .column-right img {
+    max-width: 22rem;
+  }
+
   .product-btn {
     font-size: 15px;
   }
 
 }
-@media screen and (max-width: 630px) {
+/* @media screen and (max-width: 630px) {
   .logo {
     display: none;
   }
@@ -598,9 +595,9 @@ footer a:hover {
     font-size: 15px;
   }
 
-}
+} */
 
-@media(max-width: 500px){
+@media(max-width: 630px){
   .logo {
     display: none;
   }
@@ -636,7 +633,12 @@ footer a:hover {
   }
 
   .column-left h1 {
-    font-size: 3.5rem;
+    padding-left: 2rem;
+    font-size: 3rem;
+  }
+
+  .column-right img {
+    width: 100%;
   }
 
   .footer {
