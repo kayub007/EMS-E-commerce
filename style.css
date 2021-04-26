@@ -339,7 +339,7 @@ nav a:hover {
   display: grid;
   grid-template-columns: 1fr 1fr;
   padding: 2.5rem calc((100vw - 1300px) / 2);
-  height: 90%;
+  height: 85%;
 }
 
 .column-left {
