@@ -30,19 +30,20 @@ const emailError = document.getElementById("email-error");
 const phoneError = document.getElementById("phone-error");
 
 // const thankYouMsg = document.getElementById('thankyou-msg');
-
+const navBar = document.querySelector("nav-bar");
+const prevScrollpos = window.pageYOffset;
 
 // const formDiv = document.querySelector('.cart-form');
 
-//  cart
+//  cart items
 let cart = [];
 
-//  buttons
+//  add to cart buttons
 let buttonsDOM = [];
 
 
 
-// getting the products
+// getting the products from json file
 class Products {
   async getProducts() {
     try {
@@ -85,7 +86,7 @@ class UI {
     productsDOM.innerHTML = result;
   }
 
-  //Add to cart btns
+  //get add to cart btns
   getAddToCartButtons() {
     const buttons = [...document.querySelectorAll('.product-btn')];
     buttonsDOM = buttons;
@@ -98,9 +99,8 @@ class UI {
         button.style.color = "#fff";
         button.style.backgroundColor = "#ff9a3d";
       }
-
-      //if in cart remove item
       button.addEventListener('click', (event) => {
+        //if in cart remove item
         if (event.target.innerText == "REMOVE FROM CART") {
           let removeFromCartBtn = event.target;
           let elements = cartContent.children;
@@ -116,6 +116,7 @@ class UI {
           })
           this.removeItem(id);
         }else{
+          //if not in cart add item
           event.target.innerText = "Remove from cart";
           event.target.style.color = "#fff";
           event.target.style.backgroundColor = "#ff9a3d";
@@ -135,8 +136,7 @@ class UI {
       })
     })
   }
-  
-
+  //set cart value
   setCartValues(cart) {
     let finalTotal = 0;
     let itemsTotal = 0;
@@ -150,7 +150,7 @@ class UI {
     cartItems.innerText = itemsTotal;
     
   }
-
+  //add cart item div to cart content div
   addCartItem(item) {
     const div = document.createElement('div');
     div.classList.add('cart-item');
@@ -236,6 +236,7 @@ class UI {
       } 
       this.hideCartSummary();
     });
+    //if window clicked
     window.addEventListener('click', (event) => {
       if (event.target === cartOverlay) {
         this.hideCart();
@@ -253,9 +254,9 @@ class UI {
   }
 
   CartLogic() {
-
     // cart functionality
     cartContent.addEventListener('click', event => {
+      //remove btn remove item from cart
       if (event.target.classList.contains('remove-btn')) {
         let removeBtn = event.target;
         let id = removeBtn.dataset.id;
@@ -265,6 +266,7 @@ class UI {
         })
         this.removeItem(id);
       }else if (event.target.classList.contains('plus-btn')){
+        //plus btn increase count
         let addAmount = event.target;
         let id = addAmount.dataset.id;
         let tempItem  = cart.find(item => item.id === id);
@@ -277,6 +279,7 @@ class UI {
         addAmount.previousElementSibling.innerText = tempItem.amount;
         addAmount.parentElement.previousElementSibling.innerText = "\u20A6" + tempPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       }else if (event.target.classList.contains('minus-btn')){
+        //minus btn decrease count
         let minusAmount = event.target;
         let id = minusAmount.dataset.id;
         let tempItem  = cart.find(item => item.id === id);
@@ -368,27 +371,19 @@ class UI {
       let nameInput = customerName.value.trim();
       let emailInput = email.value.trim();
       let phoneNumber = phone.value.trim();
-    
-      
-      if (cart.length === 0) {
-        alert("Please Add Product to Cart");
-      }else if (nameInput == "") {
-        nameValidation()
-      } else if (emailInput == "") {
-        emailValidation()
-      } else if (phoneNumber == "") {
-        phoneValidation()
-      }else {
+
+      if (cart.length === 0) return alert("Please Add Product to Cart");
+      if (nameInput == "") return nameValidation()
+      if (emailInput == "") return emailValidation()
+      if (phoneNumber == "") return phoneValidation()
+      else {
         this.hideCart();
         this.payWithPaystack();
         // this.showCartSummary();
         this.addCartItemSummary();
         summaryCustomerName.innerHTML = nameInput;
       }
-        
-      
-    });
-    
+    });  
   }
 
   payWithPaystack(e) {
@@ -462,8 +457,6 @@ document.addEventListener("DOMContentLoaded", ()=> {
     ui.getAddToCartButtons();
     ui.CartLogic();
   });
-
-  
 })
 
 

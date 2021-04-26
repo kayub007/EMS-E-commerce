@@ -13,13 +13,18 @@ h1, h2 {
   text-transform: uppercase;
 }
 
-nav {
-  height: 80px;
-  background-color: transparent;
+.nav-bar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #ffe9d6;
+  z-index: 30;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0rem calc((100vw - 1300px) / 2);
+  transition: top 0.3s;
 }
 
 .logo {
@@ -331,7 +336,6 @@ nav a:hover {
 
 .hero {
   background-color: #ffe9d6;
-  margin-top: -80px;
   height: 100vh;
 }
 
